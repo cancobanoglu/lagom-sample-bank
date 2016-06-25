@@ -1,0 +1,95 @@
+{
+	"variables": [],
+	"info": {
+		"name": "lagom-bank",
+		"_postman_id": "b2474579-ecef-4b91-7f22-ee961d036449",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:9000/api/account",
+			"request": {
+				"url": "http://localhost:9000/api/account",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"id\":\"1\",\n\"name\":\"olivier\",\n\"balance\":\"10000\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:9000/api/account copy",
+			"request": {
+				"url": "http://localhost:9000/api/account/{id}",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"id\":\"1\",\n\"name\":\"olivier\",\n\"balance\":\"10000\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:9000/api/account copy copy",
+			"request": {
+				"url": "http://localhost:9000/api/account/{id}/history",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"id\":\"1\",\n\"name\":\"olivier\",\n\"balance\":\"10000\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:9000/api/account copy",
+			"request": {
+				"url": "http://localhost:9000/api/account/{id}/deposit",
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"id\":\"1\",\n\"name\":\"olivier\",\n\"balance\":\"10000\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:9000/api/account copy copy",
+			"request": {
+				"url": "http://localhost:9000/api/account/{id}/transfer",
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"id\":\"1\",\n\"name\":\"olivier\",\n\"balance\":\"10000\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:9000/api/account copy copy copy",
+			"request": {
+				"url": "http://localhost:9000/api/account/{id}/withdrawal",
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"id\":\"1\",\n\"name\":\"olivier\",\n\"balance\":\"10000\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
