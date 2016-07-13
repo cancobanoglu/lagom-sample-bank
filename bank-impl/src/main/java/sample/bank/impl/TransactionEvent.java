@@ -25,12 +25,12 @@ public interface TransactionEvent extends Jsonable ,AggregateEvent<TransactionEv
   @SuppressWarnings("serial")
   @Immutable
   @JsonDeserialize
-  public final class AccountCreated implements TransactionEvent {
+  public final class AccountCreatedEvent implements TransactionEvent {
     public final String id;
     public final String name;
 
     @JsonCreator
-    public AccountCreated(String id,String name) {
+    public AccountCreatedEvent(String id, String name) {
 
       this.id = Preconditions.checkNotNull(id, "id");
       this.name = Preconditions.checkNotNull(name, "name");
@@ -40,10 +40,10 @@ public interface TransactionEvent extends Jsonable ,AggregateEvent<TransactionEv
     public boolean equals(@Nullable Object another) {
       if (this == another)
         return true;
-      return another instanceof AccountCreated && equalTo((AccountCreated) another);
+      return another instanceof AccountCreatedEvent && equalTo((AccountCreatedEvent) another);
     }
 
-    private boolean equalTo(AccountCreated another) {
+    private boolean equalTo(AccountCreatedEvent another) {
       return id.equals(another.id);
     }
 
@@ -56,20 +56,20 @@ public interface TransactionEvent extends Jsonable ,AggregateEvent<TransactionEv
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper("AccountCreated").add("id", id).toString();
+      return MoreObjects.toStringHelper("AccountCreatedEvent").add("id", id).toString();
     }
   }
 
   @SuppressWarnings("serial")
   @Immutable
   @JsonDeserialize
-  public final class MoneyDeposited implements TransactionEvent {
+  public final class MoneyDepositedEvent implements TransactionEvent {
     public final String id;
     public final Long amount;
     public final Long balance;
 
     @JsonCreator
-    public MoneyDeposited(String id, Long amount, Long balance) {
+    public MoneyDepositedEvent(String id, Long amount, Long balance) {
 
       this.id = Preconditions.checkNotNull(id, "id");
       this.amount = Preconditions.checkNotNull(amount, "amount");
@@ -80,10 +80,10 @@ public interface TransactionEvent extends Jsonable ,AggregateEvent<TransactionEv
     public boolean equals(@Nullable Object another) {
       if (this == another)
         return true;
-      return another instanceof MoneyDeposited && equalTo((MoneyDeposited) another);
+      return another instanceof MoneyDepositedEvent && equalTo((MoneyDepositedEvent) another);
     }
 
-    private boolean equalTo(MoneyDeposited another) {
+    private boolean equalTo(MoneyDepositedEvent another) {
       return id.equals(id) && amount.equals(amount)  && balance.equals(balance);
     }
 
@@ -98,7 +98,7 @@ public interface TransactionEvent extends Jsonable ,AggregateEvent<TransactionEv
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper("MoneyDeposited").add("amount", amount).toString();
+      return MoreObjects.toStringHelper("MoneyDepositedEvent").add("amount", amount).toString();
     }
   }
 
@@ -106,13 +106,13 @@ public interface TransactionEvent extends Jsonable ,AggregateEvent<TransactionEv
   @SuppressWarnings("serial")
   @Immutable
   @JsonDeserialize
-  public final class MoneyWithdrawn implements TransactionEvent {
+  public final class MoneyWithdrawnEvent implements TransactionEvent {
     public final String id;
     public final Long amount;
     public final Long balance;
 
     @JsonCreator
-    public MoneyWithdrawn(String id, Long amount, Long balance) {
+    public MoneyWithdrawnEvent(String id, Long amount, Long balance) {
 
       this.id = Preconditions.checkNotNull(id, "id");
       this.amount = Preconditions.checkNotNull(amount, "amount");
@@ -123,10 +123,10 @@ public interface TransactionEvent extends Jsonable ,AggregateEvent<TransactionEv
     public boolean equals(@Nullable Object another) {
       if (this == another)
         return true;
-      return another instanceof MoneyWithdrawn && equalTo((MoneyWithdrawn) another);
+      return another instanceof MoneyWithdrawnEvent && equalTo((MoneyWithdrawnEvent) another);
     }
 
-    private boolean equalTo(MoneyWithdrawn another) {
+    private boolean equalTo(MoneyWithdrawnEvent another) {
       return id.equals(id) && amount.equals(amount) && balance.equals(balance);
     }
 
@@ -141,7 +141,7 @@ public interface TransactionEvent extends Jsonable ,AggregateEvent<TransactionEv
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper("MoneyWithdrawn").add("amount", amount).toString();
+      return MoreObjects.toStringHelper("MoneyWithdrawnEvent").add("amount", amount).toString();
     }
   }
 }

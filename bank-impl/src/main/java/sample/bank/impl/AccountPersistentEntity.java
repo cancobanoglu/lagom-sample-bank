@@ -26,24 +26,24 @@ public class AccountPersistentEntity extends PersistentEntity<TransactionCommand
         snapshotState.orElse(new AccountState(Optional.empty())));
 
     // acount creation
-    b.setCommandHandler(TransactionCommand.CreateAccount.class, (cmd, ctx) -> {
+    b.setCommandHandler(TransactionCommand.CreateAccountCommand.class, (cmd, ctx) -> {
       if (state().account.isPresent()) {
         // already created;
         ctx.invalidCommand("Account " + cmd.id + " is already created");
         return ctx.done();
       } else {
-        return ctx.thenPersist(new TransactionEvent.AccountCreated(cmd.id, cmd.name),
+        return ctx.thenPersist(new TransactionEvent.AccountCreatedEvent(cmd.id, cmd.name),
                 evt -> ctx.reply(Done.getInstance()));
       }
 
     });
 
 
-    b.setEventHandler(TransactionEvent.AccountCreated.class,
+    b.setEventHandler(TransactionEvent.AccountCreatedEvent.class,
         evt -> new AccountState(Optional.of(new Account(evt.id, evt.name))));
 
     // Money deposit
-    b.setCommandHandler(TransactionCommand.Deposit.class, (cmd, ctx) -> {
+    b.setCommandHandler(TransactionCommand.DepositCommand.class, (cmd, ctx) -> {
       if (!state().account.isPresent()) {
         ctx.invalidCommand("Account  does not exists.");
         return ctx.done();
@@ -53,17 +53,17 @@ public class AccountPersistentEntity extends PersistentEntity<TransactionCommand
         return ctx.done();
       }
       Account current = state().account.get();
-      return ctx.thenPersist(new TransactionEvent.MoneyDeposited(current.id, cmd.amount, current.balance),
+      return ctx.thenPersist(new TransactionEvent.MoneyDepositedEvent(current.id, cmd.amount, current.balance),
               evt -> ctx.reply(Done.getInstance()));
 
     });
 
-    b.setEventHandler(TransactionEvent.MoneyDeposited.class,
+    b.setEventHandler(TransactionEvent.MoneyDepositedEvent.class,
             evt -> state().addTransaction(
                     new MoneyTransaction(TransactonType.DEPOSIT.toString(), evt.amount, LocalDateTime.now())));
 
     // Money withdrawal
-    b.setCommandHandler(TransactionCommand.Withdrawal.class, (cmd, ctx) -> {
+    b.setCommandHandler(TransactionCommand.WithdrawalCommand.class, (cmd, ctx) -> {
       if (!state().account.isPresent()) {
         ctx.invalidCommand("Account  does not exists.");
         return ctx.done();
@@ -75,12 +75,12 @@ public class AccountPersistentEntity extends PersistentEntity<TransactionCommand
         return ctx.done();
       }
       Account current = state().account.get();
-      return ctx.thenPersist(new TransactionEvent.MoneyWithdrawn(current.id,cmd.amount, current.balance),
+      return ctx.thenPersist(new TransactionEvent.MoneyWithdrawnEvent(current.id, cmd.amount, current.balance),
               evt -> ctx.reply(Done.getInstance()));
 
     });
 
-    b.setEventHandler(TransactionEvent.MoneyWithdrawn.class,
+    b.setEventHandler(TransactionEvent.MoneyWithdrawnEvent.class,
             evt -> state().addTransaction(
                     new MoneyTransaction(TransactonType.WITHDRAWAL.toString(), evt.amount, LocalDateTime.now())));
 

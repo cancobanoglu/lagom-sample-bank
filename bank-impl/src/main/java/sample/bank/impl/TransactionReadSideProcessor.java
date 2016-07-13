@@ -113,7 +113,7 @@ public class TransactionReadSideProcessor extends CassandraReadSideProcessor<Tra
     @Override
     public EventHandlers defineEventHandlers(EventHandlersBuilder builder) {
         // when Account created, insert account table;
-        builder.setEventHandler(TransactionEvent.AccountCreated.class, (ev, offset) ->{
+        builder.setEventHandler(TransactionEvent.AccountCreatedEvent.class, (ev, offset) ->{
             System.out.println("offset ->" + offset);
             BoundStatement st = writeAccount.bind()
                     .setString("account_id", ev.id)
@@ -125,7 +125,7 @@ public class TransactionReadSideProcessor extends CassandraReadSideProcessor<Tra
             return completedStatements(Arrays.asList(st, stOffset));
     });
         // when Deposit, insert history and update balance
-        builder.setEventHandler(TransactionEvent.MoneyDeposited.class, (ev, offset) ->{
+        builder.setEventHandler(TransactionEvent.MoneyDepositedEvent.class, (ev, offset) ->{
             System.out.println("offset ->" + offset);
             BoundStatement historyInsert = writeHistory.bind()
                     .setString("account_id", ev.id)
@@ -141,7 +141,7 @@ public class TransactionReadSideProcessor extends CassandraReadSideProcessor<Tra
         });
 
         // when Withdrawal, insert history and update balance
-        builder.setEventHandler(TransactionEvent.MoneyWithdrawn.class, (ev, offset) ->{
+        builder.setEventHandler(TransactionEvent.MoneyWithdrawnEvent.class, (ev, offset) ->{
             System.out.println("offset ->" + offset);
             BoundStatement historyInsert = writeHistory.bind()
                     .setString("account_id", ev.id)

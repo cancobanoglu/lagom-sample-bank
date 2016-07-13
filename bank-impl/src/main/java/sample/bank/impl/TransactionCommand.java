@@ -1,7 +1,5 @@
 package sample.bank.impl;
 
-import java.util.Optional;
-
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
@@ -23,12 +21,12 @@ public interface TransactionCommand extends Jsonable {
   @Immutable
   @JsonDeserialize
   // ReplyType<T> is return value of ComandHander
-  public final class CreateAccount implements TransactionCommand, CompressedJsonable, PersistentEntity.ReplyType<Done> {
+  public final class CreateAccountCommand implements TransactionCommand, CompressedJsonable, PersistentEntity.ReplyType<Done> {
     public final String id;
     public final String name;
 
     @JsonCreator
-    public CreateAccount(String id, String name) {
+    public CreateAccountCommand(String id, String name) {
 
       this.id = Preconditions.checkNotNull(id, "id");
       this.name = Preconditions.checkNotNull(name, "name");
@@ -38,10 +36,10 @@ public interface TransactionCommand extends Jsonable {
     public boolean equals(@Nullable Object another) {
       if (this == another)
         return true;
-      return another instanceof CreateAccount && equalTo((CreateAccount) another);
+      return another instanceof CreateAccountCommand && equalTo((CreateAccountCommand) another);
     }
 
-    private boolean equalTo(CreateAccount another) {
+    private boolean equalTo(CreateAccountCommand another) {
       return id.equals(another.id);
     }
 
@@ -54,7 +52,7 @@ public interface TransactionCommand extends Jsonable {
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper("CreateAccount").add("id", id).toString();
+      return MoreObjects.toStringHelper("CreateAccountCommand").add("id", id).toString();
     }
   }
 
@@ -62,11 +60,11 @@ public interface TransactionCommand extends Jsonable {
   @SuppressWarnings("serial")
   @Immutable
   @JsonDeserialize
-  public final class Deposit implements TransactionCommand, CompressedJsonable, PersistentEntity.ReplyType<Done> {
+  public final class DepositCommand implements TransactionCommand, CompressedJsonable, PersistentEntity.ReplyType<Done> {
     public final Long amount;
 
     @JsonCreator
-    public Deposit(Long amount) {
+    public DepositCommand(Long amount) {
 
       this.amount = Preconditions.checkNotNull(amount, "amount");
     }
@@ -75,10 +73,10 @@ public interface TransactionCommand extends Jsonable {
     public boolean equals(@Nullable Object another) {
       if (this == another)
         return true;
-      return another instanceof Deposit && equalTo((Deposit) another);
+      return another instanceof DepositCommand && equalTo((DepositCommand) another);
     }
 
-    private boolean equalTo(Deposit another) {
+    private boolean equalTo(DepositCommand another) {
       return amount.equals(amount);
     }
 
@@ -91,18 +89,18 @@ public interface TransactionCommand extends Jsonable {
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper("Deposit").add("amount", amount).toString();
+      return MoreObjects.toStringHelper("DepositCommand").add("amount", amount).toString();
     }
   }
 
   @SuppressWarnings("serial")
   @Immutable
   @JsonDeserialize
-  public final class Withdrawal implements TransactionCommand, CompressedJsonable, PersistentEntity.ReplyType<Done> {
+  public final class WithdrawalCommand implements TransactionCommand, CompressedJsonable, PersistentEntity.ReplyType<Done> {
     public final Long amount;
 
     @JsonCreator
-    public Withdrawal(Long amount) {
+    public WithdrawalCommand(Long amount) {
 
       this.amount = Preconditions.checkNotNull(amount, "amount");
     }
@@ -111,10 +109,10 @@ public interface TransactionCommand extends Jsonable {
     public boolean equals(@Nullable Object another) {
       if (this == another)
         return true;
-      return another instanceof Withdrawal && equalTo((Withdrawal) another);
+      return another instanceof WithdrawalCommand && equalTo((WithdrawalCommand) another);
     }
 
-    private boolean equalTo(Withdrawal another) {
+    private boolean equalTo(WithdrawalCommand another) {
       return amount.equals(amount);
     }
 
@@ -127,7 +125,7 @@ public interface TransactionCommand extends Jsonable {
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper("Deposit").add("amount", amount).toString();
+      return MoreObjects.toStringHelper("DepositCommand").add("amount", amount).toString();
     }
   }
 }

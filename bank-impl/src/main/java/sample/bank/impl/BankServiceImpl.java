@@ -71,7 +71,7 @@ public class BankServiceImpl implements BankService {
             PersistentEntityRef<TransactionCommand> ref = persistentEntityRegistry.refFor(AccountPersistentEntity.class, request.id);
 
             // Ask the entity the CreateAccount command.
-            return ref.ask(new TransactionCommand.CreateAccount(request.id, request.name))
+            return ref.ask(new TransactionCommand.CreateAccountCommand(request.id, request.name))
                       .thenApply(ack -> NotUsed.getInstance());
         });
     }
@@ -81,7 +81,7 @@ public class BankServiceImpl implements BankService {
         return validate((request) -> {
             PersistentEntityRef<TransactionCommand> ref = persistentEntityRegistry.refFor(AccountPersistentEntity.class, id);
 
-            return ref.ask(new TransactionCommand.Deposit(request.amount))
+            return ref.ask(new TransactionCommand.DepositCommand(request.amount))
                       .thenApply(ack -> NotUsed.getInstance());
         });
     }
@@ -90,7 +90,7 @@ public class BankServiceImpl implements BankService {
     public ServiceCall<Money, NotUsed> withdrawal(String id) {
         return validate((request) -> {
             PersistentEntityRef<TransactionCommand> ref = persistentEntityRegistry.refFor(AccountPersistentEntity.class, id);
-            return ref.ask(new TransactionCommand.Withdrawal(request.amount))
+            return ref.ask(new TransactionCommand.WithdrawalCommand(request.amount))
                       .thenApply(ack -> NotUsed.getInstance());
         });
     }
