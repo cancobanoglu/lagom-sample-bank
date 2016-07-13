@@ -34,11 +34,11 @@ public class BankServiceImpl implements BankService {
     public BankServiceImpl(PersistentEntityRegistry persistentEntityRegistry, CassandraReadSide readSide,
                            CassandraSession db) {
         this.persistentEntityRegistry = persistentEntityRegistry;
-        persistentEntityRegistry.register(AccountEntity.class);
+        persistentEntityRegistry.register(AccountPersistentEntity.class);
         // CassandraSession is Query Side API
         this.db = db;
         // CassandraReadSide is Data sharding API. When Event ocurre, Event Processor Insert or update tables to Query side.
-        readSide.register(TransactionEventProcessor.class);
+        readSide.register(TransactionReadSideProcessor.class);
     }
 
     private <Response> Response handleException(Throwable e) {
@@ -66,9 +66,11 @@ public class BankServiceImpl implements BankService {
     public ServiceCall<Account, NotUsed> createAccount() {
 
         return validate((request) -> {
-            // Look up the hello world entity for the given ID.
-            PersistentEntityRef<TransactionCommand> ref = persistentEntityRegistry.refFor(AccountEntity.class, request.id);
-            // Ask the entity the Hello command.
+
+            // Look up the  account entity for the given ID.
+            PersistentEntityRef<TransactionCommand> ref = persistentEntityRegistry.refFor(AccountPersistentEntity.class, request.id);
+
+            // Ask the entity the CreateAccount command.
             return ref.ask(new TransactionCommand.CreateAccount(request.id, request.name))
                       .thenApply(ack -> NotUsed.getInstance());
         });
@@ -77,7 +79,7 @@ public class BankServiceImpl implements BankService {
     @Override
     public ServiceCall<Money, NotUsed> deposit(String id) {
         return validate((request) -> {
-            PersistentEntityRef<TransactionCommand> ref = persistentEntityRegistry.refFor(AccountEntity.class, id);
+            PersistentEntityRef<TransactionCommand> ref = persistentEntityRegistry.refFor(AccountPersistentEntity.class, id);
 
             return ref.ask(new TransactionCommand.Deposit(request.amount))
                       .thenApply(ack -> NotUsed.getInstance());
@@ -87,7 +89,7 @@ public class BankServiceImpl implements BankService {
     @Override
     public ServiceCall<Money, NotUsed> withdrawal(String id) {
         return validate((request) -> {
-            PersistentEntityRef<TransactionCommand> ref = persistentEntityRegistry.refFor(AccountEntity.class, id);
+            PersistentEntityRef<TransactionCommand> ref = persistentEntityRegistry.refFor(AccountPersistentEntity.class, id);
             return ref.ask(new TransactionCommand.Withdrawal(request.amount))
                       .thenApply(ack -> NotUsed.getInstance());
         });

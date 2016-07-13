@@ -14,7 +14,7 @@ import java.util.concurrent.CompletionStage;
 
 /**
  */
-public class TransactionEventProcessor extends CassandraReadSideProcessor<TransactionEvent> {
+public class TransactionReadSideProcessor extends CassandraReadSideProcessor<TransactionEvent> {
 
     // initialized once
     private PreparedStatement writeAccount;
@@ -28,6 +28,10 @@ public class TransactionEventProcessor extends CassandraReadSideProcessor<Transa
         return TransactionEventTag.INSTANCE;
     }
 
+
+
+    /** Called by the framework upon initialization **/
+
     @Override
     public CompletionStage<Optional<UUID>> prepare(CassandraSession session) {
         // prepare read side tables, statement and get event offset.
@@ -40,6 +44,8 @@ public class TransactionEventProcessor extends CassandraReadSideProcessor<Transa
                selectOffset(session))))));
         // @formatter:on
     }
+
+
 
     private CompletionStage<Done> prepareCreateTables(CassandraSession session) {
         // @formatter:off
@@ -101,6 +107,8 @@ public class TransactionEventProcessor extends CassandraReadSideProcessor<Transa
                 });
     }
 
+
+    // -----------------
 
     @Override
     public EventHandlers defineEventHandlers(EventHandlersBuilder builder) {

@@ -11,7 +11,7 @@ import sample.bank.api.MoneyTransaction;
 
 /**
  */
-public class AccountEntity extends PersistentEntity<TransactionCommand, TransactionEvent, AccountState> {
+public class AccountPersistentEntity extends PersistentEntity<TransactionCommand, TransactionEvent, AccountState> {
 
   public static enum TransactonType{DEPOSIT, WITHDRAWAL};
 
