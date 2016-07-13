@@ -9,7 +9,7 @@ This is lagom sample bank account application for my study.
 
 ### create bank account
 
-`curl -X POST -H 'Content-Type: application/json' -d '{"id":""<account id>"", "name":"<account name>"}' http://localhost:9000/api/account`
+`curl -X POST -H 'Content-Type: application/json' -d '{"id":"<account id>", "name":"<account name>"}' http://localhost:9000/api/account`
 
 + POST /api/account
 + BODY `{"id":""<account id>"", "name":"<account name>"}`

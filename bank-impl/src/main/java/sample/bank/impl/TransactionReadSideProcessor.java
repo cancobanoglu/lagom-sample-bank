@@ -7,9 +7,10 @@ import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraReadSideProcessor;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 
-
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 
 /**
@@ -29,22 +30,22 @@ public class TransactionReadSideProcessor extends CassandraReadSideProcessor<Tra
     }
 
 
-
-    /** Called by the framework upon initialization **/
+    /**
+     * Called by the framework upon initialization
+     **/
 
     @Override
     public CompletionStage<Optional<UUID>> prepare(CassandraSession session) {
         // prepare read side tables, statement and get event offset.
         // @formatter:off
         return prepareCreateTables(session).thenCompose(a ->
-               prepareWriteAccount(session).thenCompose(b ->
-               prepareWriteHistory(session).thenCompose(c ->
-               prepareUpdateAccount(session).thenCompose(d ->
-               prepareWriteOffset(session).thenCompose(e ->
-               selectOffset(session))))));
+                                                                prepareWriteAccount(session).thenCompose(b ->
+                                                                                                                 prepareWriteHistory(session).thenCompose(c ->
+                                                                                                                                                                  prepareUpdateAccount(session).thenCompose(d ->
+                                                                                                                                                                                                                    prepareWriteOffset(session).thenCompose(e ->
+                                                                                                                                                                                                                                                                    selectOffset(session))))));
         // @formatter:on
     }
-
 
 
     private CompletionStage<Done> prepareCreateTables(CassandraSession session) {
@@ -53,14 +54,14 @@ public class TransactionReadSideProcessor extends CassandraReadSideProcessor<Tra
                 "CREATE TABLE IF NOT EXISTS account ("
                         + "account_id text, name text, balance bigint, "
                         + "PRIMARY KEY (account_id))")
-                .thenCompose(a -> session.executeCreateTable(
-                 "CREATE TABLE IF NOT EXISTS transaction_history ("
-                     + "account_id text, at timestamp, amount bigint, type text, "
-                     + "PRIMARY KEY (account_id, at))")
-                .thenCompose(b -> session.executeCreateTable(
-                      "CREATE TABLE IF NOT EXISTS account_offset ("
-                           + "partition int, offset timeuuid, "
-                           + "PRIMARY KEY (partition))")));
+                      .thenCompose(a -> session.executeCreateTable(
+                              "CREATE TABLE IF NOT EXISTS transaction_history ("
+                                      + "account_id text, at timestamp, amount bigint, type text, "
+                                      + "PRIMARY KEY (account_id, at))")
+                                               .thenCompose(b -> session.executeCreateTable(
+                                                       "CREATE TABLE IF NOT EXISTS account_offset ("
+                                                               + "partition int, offset timeuuid, "
+                                                               + "PRIMARY KEY (partition))")));
         // @formatter:on
     }
 
@@ -96,15 +97,15 @@ public class TransactionReadSideProcessor extends CassandraReadSideProcessor<Tra
 
     private CompletionStage<Optional<UUID>> selectOffset(CassandraSession session) {
         return session.selectOne("SELECT offset FROM account_offset")
-                .thenApply(optionalRow -> {
-                    Optional<UUID> uuid =  optionalRow.map(r -> r.getUUID("offset"));
-                    if (uuid.isPresent()) {
-                        System.out.println("prepare uuid ->" + uuid.get().toString());
-                    } else {
-                        System.out.println("prepare uuid is none.");
-                    }
-                    return uuid;
-                });
+                      .thenApply(optionalRow -> {
+                          Optional<UUID> uuid = optionalRow.map(r -> r.getUUID("offset"));
+                          if (uuid.isPresent()) {
+                              System.out.println("prepare uuid ->" + uuid.get().toString());
+                          } else {
+                              System.out.println("prepare uuid is none.");
+                          }
+                          return uuid;
+                      });
     }
 
 
@@ -113,45 +114,45 @@ public class TransactionReadSideProcessor extends CassandraReadSideProcessor<Tra
     @Override
     public EventHandlers defineEventHandlers(EventHandlersBuilder builder) {
         // when Account created, insert account table;
-        builder.setEventHandler(TransactionEvent.AccountCreatedEvent.class, (ev, offset) ->{
+        builder.setEventHandler(TransactionEvent.AccountCreatedEvent.class, (ev, offset) -> {
             System.out.println("offset ->" + offset);
             BoundStatement st = writeAccount.bind()
-                    .setString("account_id", ev.id)
-                    .setString("name", ev.name);
+                                            .setString("account_id", ev.id)
+                                            .setString("name", ev.name);
 
 
             BoundStatement stOffset = writeOffset.bind(offset);
 
             return completedStatements(Arrays.asList(st, stOffset));
-    });
+        });
         // when Deposit, insert history and update balance
-        builder.setEventHandler(TransactionEvent.MoneyDepositedEvent.class, (ev, offset) ->{
+        builder.setEventHandler(TransactionEvent.MoneyDepositedEvent.class, (ev, offset) -> {
             System.out.println("offset ->" + offset);
             BoundStatement historyInsert = writeHistory.bind()
-                    .setString("account_id", ev.id)
-                    .setLong("amount",ev.amount)
-                    .setString("type", "DEPOSIT")
-                    .setTimestamp("at", toTimestamp(offset));
+                                                       .setString("account_id", ev.id)
+                                                       .setLong("amount", ev.amount)
+                                                       .setString("type", "DEPOSIT")
+                                                       .setTimestamp("at", toTimestamp(offset));
 
             BoundStatement accountUpdate = updateAccount.bind()
-                    .setString("account_id", ev.id)
-                    .setLong("balance", ev.balance + ev.amount);
+                                                        .setString("account_id", ev.id)
+                                                        .setLong("balance", ev.balance + ev.amount);
 
             return completedStatements(Arrays.asList(historyInsert, accountUpdate, writeOffset.bind(offset)));
         });
 
         // when Withdrawal, insert history and update balance
-        builder.setEventHandler(TransactionEvent.MoneyWithdrawnEvent.class, (ev, offset) ->{
+        builder.setEventHandler(TransactionEvent.MoneyWithdrawnEvent.class, (ev, offset) -> {
             System.out.println("offset ->" + offset);
             BoundStatement historyInsert = writeHistory.bind()
-                    .setString("account_id", ev.id)
-                    .setLong("amount", ev.amount)
-                    .setString("type", "WITHDRAWAL")
-                    .setTimestamp("at", toTimestamp(offset));
+                                                       .setString("account_id", ev.id)
+                                                       .setLong("amount", ev.amount)
+                                                       .setString("type", "WITHDRAWAL")
+                                                       .setTimestamp("at", toTimestamp(offset));
 
             BoundStatement accountUpdate = updateAccount.bind()
-                    .setString("account_id", ev.id)
-                    .setLong("balance", ev.balance - ev.amount);
+                                                        .setString("account_id", ev.id)
+                                                        .setLong("balance", ev.balance - ev.amount);
 
             return completedStatements(Arrays.asList(historyInsert, accountUpdate, writeOffset.bind(offset)));
         });
@@ -159,10 +160,12 @@ public class TransactionReadSideProcessor extends CassandraReadSideProcessor<Tra
     }
 
 
-    /** UUID type1 timestampe to unix epoch Timestamp */
+    /**
+     * UUID type1 timestampe to unix epoch Timestamp
+     */
     private Timestamp toTimestamp(UUID type1UUID) {
 
-        final long  NUM_100NS_INTERVALS_SINCE_UUID_EPOCH = 0x01b21dd213814000L;
-        return new Timestamp((type1UUID.timestamp()-NUM_100NS_INTERVALS_SINCE_UUID_EPOCH)/10000L);
+        final long NUM_100NS_INTERVALS_SINCE_UUID_EPOCH = 0x01b21dd213814000L;
+        return new Timestamp((type1UUID.timestamp() - NUM_100NS_INTERVALS_SINCE_UUID_EPOCH) / 10000L);
     }
 }
