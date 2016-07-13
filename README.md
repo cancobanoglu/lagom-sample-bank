@@ -5,6 +5,8 @@ lagom sample application
 
 This is lagom sample bank account application for my study.
 
+Cleaned up, renamed and documented to help understanding, @orefalo
+
 ## API
 
 ### create bank account
